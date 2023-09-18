@@ -22,13 +22,18 @@ console.log('-------- Age --------')
 
 // You can make a date from almost any 
 // human readable string for example: 
-const bday = new Date('Sept 26, 1965')
+const bday = new Date('June 15, 2003')
 // Challenge: Calculate your age with JS
 const age = today - bday 
 console.log(age, '<- Age in ms')
 // Challenge: Calculate your age in secs, mins, hrs, days, years
 
 console.log('-------- BDay --------')
+console.log(`secs: ${age / 1000}`)
+console.log(`mins: ${age / 1000 / 60}`)
+console.log(`hrs: ${age / 1000 / 60 / 60}`)
+console.log(`days: ${age / 1000 / 60 / 60 / 24}`)
+console.log(`years: ${age / 1000 / 60 / 60 / 24 / 365.25}`)
 
 // You can also initialize a date with 
 // year, month, date, hours, mins, secs, ms
@@ -42,10 +47,12 @@ const months = ['Jan','Feb','Mar','Apr','May','Jun', 'Jul','Aug','Sep','Oct','No
 // Shows the month for new years
 console.log(months[newYear.getMonth()])
 // Challenge: Show the month of your birthday
+console.log(months[bday.getMonth()])
 
 // Days of the week are also 0 indexed 0:Sun - 6:Sat 
 const days = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']
 // Challenge: Show the day of the week of your birthday
+console.log(days[bday.getDay()])
 
 console.log('-------- Data Offsets --------')
 
@@ -77,7 +84,14 @@ console.log('--------- Problem 1 --------')
 // offset is the number days between each of the dates returned
 
 function consecutiveDates(date, repeat, offset) {
-  // Your code here 
+  let dates = []
+  for (let i = 0; i < repeat; i++) {
+    // add the date to the array
+    dates.push(date)
+    // add the offset to the date
+    date.setDate(date.getDate() + offset)
+  }
+  return dates
 }
 
 // Starting date 1/1/2019, repeat 4 times, return dates 
@@ -99,9 +113,22 @@ consecutiveDates(new Date(2019, 0, 1), 4, 3)
 // 2. 1/1/2020
 // 3. 1/1/2021
 
-// function consecutiveDates(date, repeat, offset, unit = 'day') {
-// 
-// }
+function consecutiveDates(date, repeat, offset, unit = 'day') {
+  let dates = []
+  for (let i = 0; i < repeat; i++) {
+    // add the date to the array
+    dates.push(date)
+    // add the offset to the date
+    if (unit === 'day') {
+      date.setDate(date.getDate() + offset)
+    } else if (unit === 'month') {
+      date.setMonth(date.getMonth() + offset)
+    } else if (unit === 'year') {
+      date.setFullYear(date.getFullYear() + offset)
+    }
+  }
+  return dates
+}
 
 console.log('--------- Problem 2 --------')
 
@@ -113,8 +140,7 @@ console.log('--------- Problem 2 --------')
 // nums.sort((a,b) => a - b) -> [77, 888, 1111, 2222, 5555]
 
 function orderDates(dates) {
-  // orders the dates 
-  // returns a new array of ordered dates
+  return dates.sort((a,b) => a - b)
 }
 
 orderDates([today, dueDate, startDate, bday, newYear])
@@ -136,8 +162,20 @@ console.log('--------- Problem 3 --------')
 // but not before!
 
 function nextDate(dates) {
-  // find the date that will happen next in dates
-  // return the next date
+  // this fuction does not make a lot of sense
+
+  if (dates.length === 0) return null
+  if (dates.length === 1) return [dates[0], dates[0] + 1]
+
+  dates = orderDates(dates)
+  let change = []
+  for (let i = 0; i < dates.length - 1; i++) {
+    change.push(dates[i] - dates[i+1])
+  }
+  // calculate the rate of change
+  let rateOfChange = change.reduce((a,b) => a + b) / change.length
+  const next = dates[dates.length - 1] + rateOfChange
+  return [dates[dates.length - 1], next]
 }
 
 nextDate([today, dueDate, startDate, bday, newYear])
@@ -152,6 +190,8 @@ console.log('--------- Problem 4 --------')
 
 function whensYourParty(date, year) {
   // Find the day of the year for your birthday
+  const newYear = new Date(year, date.getDay(), date.getMonth())
+  return days[newYear.getDay()]
 }
 
 whensYourParty(bday, 2022)
